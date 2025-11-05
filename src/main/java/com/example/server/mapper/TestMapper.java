@@ -1,0 +1,10 @@
+package com.example.server.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.server.model.entity.Test;
+import com.example.server.model.request.TestTimeRequest;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface TestMapper extends BaseMapper<Test> {
+}

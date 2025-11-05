@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.server.mapper.EventMapper">
+    <select id="selectByTime" resultType="com.example.server.model.entity.Event">
+        SELECT * FROM event
+        WHERE Time BETWEEN #{startTime} AND #{endTime}
+    </select>
+    <select id="incidentStates" resultType="java.lang.String">
+        SELECT DISTINCT IFBanJie FROM event
+        WHERE IFBanJie IS NOT NULL;
+    </select>
+    <select id="selectByTimeAndState" resultType="com.example.server.model.entity.Event">
+        SELECT * FROM event
+        WHERE Time BETWEEN #{startTime} AND #{endTime} AND IfBanJie = #{incidentsState};
+    </select>
+
+    <select id="getIncidentRecordList" resultType="com.example.server.model.vo.IncidentRecordVO">
+        SELECT
+        e.ID AS id,
+        e.IMEI AS imei,
+        m.PhoneUserName AS phoneUserName,
+        m.PhoneNum AS phoneNum,
+        e.Time AS time,
+        m.Address AS address,
+        t.eventtype AS eventType,
+        t.eventcontent AS eventContent,
+        e.IfBanJie AS ifBanJie,
+        e.ChengBanDanWei AS chengBanDanWei
+        FROM event e
+        JOIN mobilephone m ON e.IMEI = m.IMEI
+        JOIN eventtype t ON e.EventID = t.ID
+        <where>
+            <if test="startTime != null and endTime != null">
+                (e.Time BETWEEN #{startTime} AND #{endTime})
+            </if>
+            <if test="incidentState != null">
+                AND e.IfBanJie = #{incidentState}
+            </if>
+            <if test="incidentType != null">
+                AND t.eventtype = #{incidentType}
+            </if>
+        </where>
+        ORDER BY e.Time DESC
+    </select>
+
+    <select id="getIncidentDetail" resultType="com.example.server.model.vo.IncidentDetailVO">
+        SELECT
+        e.ID AS id,
+        e.IMEI AS imei,
+        e.Time AS time,
+        e.lng AS lng,
+        e.lat AS lat,
+        e.EventImage AS eventImage,
+        e.content AS content,
+        t.eventtype AS eventType,
+        t.eventcontent AS eventContent,
+        m.PhoneNum AS phoneNum,
+        m.PhoneUserName AS phoneUserName,
+        m.address AS address,
+
+        e.ChuLiType AS chuLiType,
+        e.BanLIYaoQiu AS banLIYaoQiu,
+        e.JiaoBanTime AS jiaoBanTime,
+        e.ChengBanDanWei AS chengBanDanWei,
+
+        e.BanLiFanKui AS banLiFanKui,
+        e.FanKuiTime AS fanKuiTime,
+        e.FanKuiRenYuan AS fanKuiRenYuan,
+        e.IfBanJie AS ifBanJie
+
+        FROM event e
+        LEFT JOIN mobilephone m ON e.IMEI = m.IMEI
+        LEFT JOIN eventtype t ON e.EventID = t.ID
+        WHERE e.ID = #{id}
+    </select>
+    <select id="getDepartmentIncidentRecordList" resultType="com.example.server.model.vo.IncidentRecordVO">
+        SELECT
+        e.ID AS id,
+        e.IMEI AS imei,
+        m.PhoneUserName AS phoneUserName,
+        m.PhoneNum AS phoneNum,
+        e.Time AS time,
+        m.Address AS address,
+        t.eventtype AS eventType,
+        t.eventcontent AS eventContent,
+        e.IfBanJie AS ifBanJie,
+        e.ChengBanDanWei AS chengBanDanWei
+        FROM event e
+        JOIN mobilephone m ON e.IMEI = m.IMEI
+        JOIN eventtype t ON e.EventID = t.ID
+        JOIN sysuser s ON s.UserDepartment = e.ChengBanDanWei
+        <where>
+            s.ID = #{userId}
+            <if test="startTime != null and endTime != null">
+                AND (e.Time BETWEEN #{startTime} AND #{endTime})
+            </if>
+            <if test="incidentState != null">
+                AND e.IfBanJie = #{incidentState}
+            </if>
+            <if test="incidentType != null">
+                AND t.eventtype = #{incidentType}
+            </if>
+        </where>
+        ORDER BY e.Time DESC
+    </select>
+</mapper>

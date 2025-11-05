@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.server.mapper.SysUserMapper">
+    <insert id="addSysUser">
+        INSERT INTO sysuser(LoginID, LoginPwd, UserName, UserRoleName, UserDepartment, UserPhoneNum)
+        VALUES (#{loginID}, #{loginPwd}, #{userName}, #{userRoleName}, #{userDepartment}, #{userPhoneNum})
+    </insert>
+    <update id="setPassword">
+        UPDATE sysuser
+        SET LoginPwd = #{newPassword}
+        WHERE ID = #{id}
+    </update>
+    <update id="editSystemUserByLoginID">
+        UPDATE sysuser
+        SET UserName = #{userName}, UserDepartment = #{userDepartment}, UserPhoneNum = #{userPhoneNum}
+        WHERE loginID = #{loginID}
+    </update>
+    <update id="setPasswordByLoginID">
+        UPDATE sysuser
+        SET LoginPwd = #{systemUserDefaultPassword}
+        WHERE LoginID = #{loginID}
+    </update>
+    <delete id="deleteSystemUserByLoginID">
+        DELETE FROM sysuser
+        WHERE LoginID = #{loginID}
+    </delete>
+
+    <select id="existsByLoginID" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM sysuser
+        WHERE LoginID = #{loginID}
+    </select>
+    <select id="countAdmin" resultType="java.lang.Integer">
+        SELECT COUNT(*) > 0
+        FROM admin
+    </select>
+    <select id="getPasswordByLoginID" resultType="java.lang.String">
+        SELECT LoginPwd
+        FROM sysuser
+        WHERE LoginID = #{loginID}
+    </select>
+    <select id="getSysUserDOByLoginID" resultType="com.example.server.model.entity.SysUser">
+        SELECT ID, LoginID, UserName, UserRoleName, UserDepartment, UserPhoneNum
+        FROM sysuser
+        WHERE LoginID = #{loginID}
+    </select>
+    <select id="getSysUserDOByID" resultType="com.example.server.model.entity.SysUser">
+        SELECT ID, LoginID, UserName, UserRoleName, UserDepartment, UserPhoneNum
+        FROM sysuser
+        WHERE ID = #{id}
+    </select>
+    <select id="checkPassword" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM sysuser
+        WHERE ID = #{id} AND LoginPwd = #{oldPassword}
+    </select>
+    <select id="getSysUserList" resultType="com.example.server.model.entity.SysUser">
+        SELECT ID, LoginID, UserName, UserRoleName, UserDepartment, UserPhoneNum
+        FROM sysuser
+    </select>
+    <select id="selectUserDepartments" resultType="String">
+        select DISTINCT UserDepartment
+        from sysuser
+    </select>
+</mapper>

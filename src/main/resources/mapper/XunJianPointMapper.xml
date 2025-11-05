@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.server.mapper.XunJianPointMapper">
+    <select id="getNewestIspPosList" resultType="com.example.server.model.vo.IspPosVO">
+        SELECT t.*
+        FROM xunjianpoint t
+                 JOIN (
+            SELECT IMEI, MAX(Time) AS max_time
+            FROM xunjianpoint
+            GROUP BY IMEI
+        ) m ON t.IMEI = m.IMEI AND t.Time = m.max_time;
+    </select>
+    <select id="getMobilePhoneUserIspPosReplaying" resultType="com.example.server.model.entity.XunJianPoint">
+        SELECT
+            ID, IMEI,
+            UNIX_TIMESTAMP(Time) * 1000 AS time,
+            lng, lat
+        FROM xunjianpoint
+        WHERE IMEI = #{IMEI} AND UNIX_TIMESTAMP(Time) * 1000 BETWEEN #{startTimeStamp} AND #{endTimeStamp}
+
+    </select>
+</mapper>

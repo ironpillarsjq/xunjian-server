@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.server.mapper.MobilePhoneMapper">
+    <select id="getMobilePhoneUserByIMEI" resultType="com.example.server.model.entity.MobilePhone">
+        SELECT *
+        FROM mobilephone
+        WHERE IMEI = #{IMEI};
+    </select>
+    <select id="getMobilePhoneUserList" resultType="com.example.server.model.entity.MobilePhone">
+        SELECT *
+        FROM mobilephone;
+    </select>
+    <select id="getMobilePhoneUserById" resultType="com.example.server.model.entity.MobilePhone">
+        SELECT * FROM mobilephone
+        WHERE ID = #{id}
+    </select>
+    <select id="countByImei" resultType="int">
+        select count(*)
+        from mobilephone
+        where IMEI = #{imei,jdbcType=VARCHAR}
+    </select>
+    <select id="countById" resultType="int">
+        select count(*)
+        from mobilephone
+        where ID = #{id,jdbcType=NUMERIC}
+    </select>
+    <select id="countByImeiAndIdNotIn" resultType="int">
+        select count(*)
+        from mobilephone
+        where
+        IMEI = #{imei,jdbcType=VARCHAR}
+        AND ID not in
+        <foreach collection="idList" item="item" open="(" close=")" separator=",">
+            #{item,jdbcType=NUMERIC}
+        </foreach>
+    </select>
+    <delete id="deleteById">
+        delete
+        from mobilephone
+        where ID = #{id,jdbcType=NUMERIC}
+    </delete>
+</mapper>
