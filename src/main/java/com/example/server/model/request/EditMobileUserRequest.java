@@ -1,10 +1,9 @@
 package com.example.server.model.request;
 
-import com.example.server.validation.ImeiValidator;
-import com.example.server.validation.PhoneNumberValidator;
+import com.example.server.security.validation.ImeiValidator;
+import com.example.server.security.validation.PhoneNumberValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data

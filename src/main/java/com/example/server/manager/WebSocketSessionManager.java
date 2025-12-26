@@ -13,21 +13,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class WebSocketSessionManager {
-    private static final Map<Integer, WebSocketSession> SESSION_POOL = new ConcurrentHashMap<>();
+    private static final Map<String, WebSocketSession> SESSION_POOL = new ConcurrentHashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(WebSocketSessionManager.class);
     // 添加连接
-    public static void add(Integer userId, WebSocketSession session) {
+    public static void add(String userId, WebSocketSession session) {
         SESSION_POOL.put(userId, session);
     }
 
     // 移除连接
-    public static void remove(Integer userId) {
+    public static void remove(String userId) {
         SESSION_POOL.remove(userId);
     }
 
     // 主动推送消息给指定用户
-    public static void sendMessage(Integer userId, Object message) {
+    public static void sendMessage(String userId, Object message) {
         WebSocketSession session = SESSION_POOL.get(userId);
         if (session != null && session.isOpen()) {
             try {

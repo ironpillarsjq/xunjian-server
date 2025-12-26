@@ -1,6 +1,6 @@
 package com.example.server.model.request;
 
-import com.example.server.validation.PhoneNumberValidator;
+import com.example.server.security.validation.PhoneNumberValidator;
 import lombok.Data;
 
 @Data

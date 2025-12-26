@@ -76,28 +76,22 @@ public class JwtAuthFilter implements Filter {
             if (token != null && jwtUtil.isValid(token)) {
                 // 从JWT中获取用户ID
                 Integer id = Integer.parseInt(jwtUtil.getId(token));
-
-                // 查询数据库获取完整用户信息
-                LoginBO loginBO = loadUserFromDatabase(id);
-
-                if (loginBO != null) {
-                    // 存入ThreadLocal上下文
-                    if (isWebSocketHandshake(httpRequest)) {
-                        // WebSocket 握手：存入 Request Attribute
-                        request.setAttribute("id", id);
-                    } else {
-                        // 普通请求：存入 ThreadLocal
+                if (!isWebSocketHandshake(httpRequest)) {
+                    // 查询数据库获取完整用户信息
+                    LoginBO loginBO = loadUserFromDatabase(id);
+                    if (loginBO != null) {
+                        // 存入ThreadLocal上下文，如果是websocket则不存储
                         UserContext.setUser(loginBO);
                     }
-                    chain.doFilter(request, response);
                 }
+                chain.doFilter(request, response);
+
             } else {
                 // 否则返回令牌非法
                 sendErrorResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN", "Invalid or missing token");
             }
         } catch (Exception e) {
-            logger.error("过滤器认证失败");
-            sendErrorResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN", "Invalid or missing token");
+            logger.error(e.getMessage(), e);
         }
         finally {
             // 确保每次请求后清理ThreadLocal

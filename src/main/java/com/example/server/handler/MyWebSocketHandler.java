@@ -1,29 +1,23 @@
 package com.example.server.handler;
 
 import com.example.server.manager.WebSocketSessionManager;
-import com.example.server.model.bo.LoginBO;
-import com.example.server.security.context.UserContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
-// -------------------------使用websocket拦截器
-
 public class MyWebSocketHandler extends TextWebSocketHandler {
+
+    Logger logger = LoggerFactory.getLogger(MyWebSocketHandler.class);
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         // 连接建立后，可以获取用户 ID
-        Integer userId = (Integer) session.getAttributes().get("id");
+        String userId = (String) session.getAttributes().get("id");
         WebSocketSessionManager.add(userId, session);
-        System.out.println("用户连接成功: " + userId);
+        logger.info("用户ws连接成功，用户id：{}", userId);
     }
 
     @Override
@@ -33,7 +27,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(@NotNull WebSocketSession session, CloseStatus status) {
-        Integer userId = (Integer) session.getAttributes().get("id");
+        String userId = (String) session.getAttributes().get("id");
         WebSocketSessionManager.remove(userId);
+        logger.info("用户ws连接断开，用户id：{}", userId);
     }
 }

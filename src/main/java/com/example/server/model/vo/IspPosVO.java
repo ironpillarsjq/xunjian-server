@@ -2,6 +2,7 @@ package com.example.server.model.vo;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
