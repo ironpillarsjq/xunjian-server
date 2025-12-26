@@ -40,13 +40,14 @@ public class JwtAuthFilter implements Filter {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    // 1. 定义 WebSocket 的基础路径（根据你之前的配置，假设是 /ws）
+    private static final String WS_PATH_PREFIX = "/ws";
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-
-
-        logger.info("进入JwtAuthFilter");
+//        logger.info("进入JwtAuthFilter");
 
         // 包装请求以保护原始Content-Type
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper((HttpServletRequest) request);
@@ -81,16 +82,24 @@ public class JwtAuthFilter implements Filter {
 
                 if (loginBO != null) {
                     // 存入ThreadLocal上下文
-                    UserContext.setUser(loginBO);
+                    if (isWebSocketHandshake(httpRequest)) {
+                        // WebSocket 握手：存入 Request Attribute
+                        request.setAttribute("id", id);
+                    } else {
+                        // 普通请求：存入 ThreadLocal
+                        UserContext.setUser(loginBO);
+                    }
+                    chain.doFilter(request, response);
                 }
             } else {
                 // 否则返回令牌非法
                 sendErrorResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN", "Invalid or missing token");
-                return;
             }
-
-            chain.doFilter(wrappedRequest, response);
-        } finally {
+        } catch (Exception e) {
+            logger.error("过滤器认证失败");
+            sendErrorResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN", "Invalid or missing token");
+        }
+        finally {
             // 确保每次请求后清理ThreadLocal
             UserContext.clear();
         }
@@ -100,6 +109,13 @@ public class JwtAuthFilter implements Filter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
+        }
+
+        // 再尝试从 Query String 获取 (兼容 WebSocket)
+        // 匹配前端 URL: ws://localhost:8080/ws/message?token=xxxxx
+        String tokenParam = request.getParameter("token");
+        if (tokenParam != null && !tokenParam.isEmpty()) {
+            return tokenParam;
         }
         return null;
     }
@@ -127,5 +143,12 @@ public class JwtAuthFilter implements Filter {
         errorResponse.put("message", message);
 
         response.getWriter().write(gson.toJson(errorResponse));
+    }
+    /**
+     * 判断是否为 WebSocket 握手请求
+     */
+    private boolean isWebSocketHandshake(HttpServletRequest request) {
+        String upgrade = request.getHeader("Upgrade");
+        return "websocket".equalsIgnoreCase(upgrade);
     }
 }

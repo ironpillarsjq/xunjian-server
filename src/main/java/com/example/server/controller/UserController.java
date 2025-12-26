@@ -79,7 +79,7 @@ public class UserController {
 
     @Operation(summary = "人员GPS回演")
     @PostMapping("/get-mobile-phone-user-isp-pos-replaying-list")
-    public ResponseResult<List<XunJianPoint>> getMobilePhoneUserIspPosReplayingList(@RequestBody MobilePhoneUserIspPosReplayingRequest mobilePhoneUserIspPosReplayingRequest) {
+    public ResponseResult<List<List<XunJianPoint>>> getMobilePhoneUserIspPosReplayingList(@RequestBody MobilePhoneUserIspPosReplayingRequest mobilePhoneUserIspPosReplayingRequest) {
         return ResponseResult.success(userService.getMobilePhoneUserIspPosReplayingList(mobilePhoneUserIspPosReplayingRequest.getStartTimeStamp(), mobilePhoneUserIspPosReplayingRequest.getEndTimeStamp(), mobilePhoneUserIspPosReplayingRequest.getId()));
     }
 

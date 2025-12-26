@@ -15,9 +15,12 @@ import com.example.server.model.vo.ResponseResult;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -71,10 +74,84 @@ public class UserService {
     }
 
 
-    public List<XunJianPoint> getMobilePhoneUserIspPosReplayingList(long startTimeStamp, long endTimeStamp, Integer id) {
+    public List<List<XunJianPoint>> getMobilePhoneUserIspPosReplayingList(long startTimeStamp, long endTimeStamp, Integer id) {
         String IMEI = mobilePhoneMapper.getMobilePhoneUserById(id).getImei();
-        return xunJianPointMapper.getMobilePhoneUserIspPosReplaying(startTimeStamp, endTimeStamp, IMEI);
+        List<XunJianPoint> allXunJianPointList = xunJianPointMapper.getMobilePhoneUserIspPosReplaying(startTimeStamp, endTimeStamp, IMEI);
+        // 按照时间的间隔和距离的间隔来区分是否是同一次巡检
+        List<List<XunJianPoint>> resList = new ArrayList<>();
+        if (allXunJianPointList.size() == 1 || allXunJianPointList.isEmpty()) {
+            resList.add(allXunJianPointList);
+        } else {
+            resList.add(new ArrayList<>());
+            // 第一个巡检点直接加入
+            resList.getLast().add(allXunJianPointList.getFirst());
+
+            for (int i = 1; i < allXunJianPointList.size(); i++) {
+                // 判断当前点与前一点是否同组
+                if (sameGroupJudge(allXunJianPointList.get(i-1), allXunJianPointList.get(i))) {
+                    // 同一组
+                    resList.getLast().add(allXunJianPointList.get(i));
+                } else {
+                    // 不同组
+                    // 判断上一组点的数量是否超过1，如果不到1个点，则删除
+                    if (resList.getLast().size() <= 1) {
+                        resList.removeLast();
+                    }
+                    resList.add(new ArrayList<>());
+                    resList.getLast().add(allXunJianPointList.get(i));
+                }
+
+            }
+        }
+        return resList;
     }
+
+    @Value("${app.xunjian-point.time-limit}")
+    private int TIME_LIMIT_MINUTES;
+
+    @Value("${app.xunjian-point.distance-limit}")
+    private int DISTANCE_LIMIT_KM;
+
+    private boolean sameGroupJudge(XunJianPoint p1, XunJianPoint p2) {
+        if (p1 == null || p2 == null) {
+            return false;
+        }
+
+        // 1. 时间差判断
+        long timeDiff = Math.abs(p2.getTime() - p1.getTime());
+        if (timeDiff > (long) TIME_LIMIT_MINUTES * 60 * 1000) {
+            return false;
+        }
+
+        // 2. 距离判断
+        double distance = distanceKm(
+                p1.getLat(), p1.getLng(),
+                p2.getLat(), p2.getLng()
+        );
+
+        return distance <= DISTANCE_LIMIT_KM;
+//        return true;
+    }
+
+    private static double distanceKm(double lat1, double lon1,
+                                     double lat2, double lon2) {
+
+        final double R = 6371.0; // 地球半径（km）
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c;
+    }
+
 
     public List<MobilePhone> getMobilePhoneUserList() {
         return mobilePhoneMapper.getMobilePhoneUserList();

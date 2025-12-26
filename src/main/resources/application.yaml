@@ -47,3 +47,6 @@ app:
   user:
     isp-pos-valid-time: 100000000 # 巡检人员位置信息的有效时间（单位：分钟）
     system-user-default-password: 123456 # 系统用户默认密码
+  xunjian-point:
+    time-limit: 1200000 # 巡检点最大间隔时间（分钟）
+    distance-limit: 10 # 巡检点间最大距离（千米）
