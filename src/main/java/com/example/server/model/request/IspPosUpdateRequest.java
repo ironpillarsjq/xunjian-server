@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 
 @Data
 public class IspPosUpdateRequest {
-    // id不需要，直接不接收了
-//    private Integer id;
+    private Integer id;
     @ImeiValidator
     private String imei;
     @NotNull
     private Long time;
     @NotNull
-    private Double lat;
-    @NotNull
     private Double lng;
+    @NotNull
+    private Double lat;
+
 }

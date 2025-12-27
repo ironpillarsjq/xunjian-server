@@ -33,7 +33,8 @@ public class JwtAuthFilter implements Filter {
     private SysUserMapper adminMapper;  // 你的管理员Mapper
     // 定义不需要认证的路径
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-            "/user/login"
+            "/user/login",
+            "/internal"
     );
 
     private final Gson gson = new Gson();

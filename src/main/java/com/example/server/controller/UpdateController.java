@@ -1,8 +1,10 @@
 package com.example.server.controller;
 
+import com.example.server.annotation.CheckSignature;
 import com.example.server.model.request.IspPosUpdateRequest;
 import com.example.server.model.vo.ResponseResult;
 import com.example.server.service.impl.UpdateService;
+import com.example.server.utils.LoggerUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,10 @@ public class UpdateController {
     @Autowired
     UpdateService updateService;
     @PostMapping("/isp-pos-update")
+    @CheckSignature
     public ResponseResult<Void> ispPosUpdate(@Valid @RequestBody IspPosUpdateRequest ispPosUpdateRequest) {
         updateService.ispPosUpdate(ispPosUpdateRequest);
+        LoggerUtil.info(UpdateController.class, "定位更新： " + ispPosUpdateRequest.getImei());
         return ResponseResult.success();
     }
 }
