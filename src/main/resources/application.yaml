@@ -57,12 +57,12 @@ internal-communication:
   xunjian-server-mobile:
     app-id: "xunjian-server-mobile"
     secret: "6a33d1de-b580-4b27-9312-ad6a2e1d967b"
-    url: "localhost"
-    port: "8082"
+    host: "localhost"
+    port: "8090"
   xunjian-server-web:
     protocol: "http"
     app-id: "xunjian-server-web"
     secret: "70eb394e-a98c-4c29-aa12-55571428ef63"
-    url: "localhost"
+    host: "localhost"
     port: "8080"
     isp-pos-update-path: "/internal/update/isp-pos-update"
