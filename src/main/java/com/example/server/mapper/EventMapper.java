@@ -7,7 +7,6 @@ import com.example.server.model.vo.IncidentRecordVO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

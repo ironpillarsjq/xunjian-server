@@ -1,6 +1,6 @@
 package com.example.server.model.request;
 
-import com.example.server.security.validation.ImeiValidator;
+//import com.example.server.security.validation.ImeiValidator;
 import com.example.server.security.validation.PhoneNumberValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +15,8 @@ public class EditMobileUserRequest {
     @NotBlank(message = "手机号用户名不能为空")
     private String phoneUserName;
 
-    @ImeiValidator
+//    @ImeiValidator
+    @NotBlank
     private String imei;
 
 
