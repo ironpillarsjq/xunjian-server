@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface EventTypeMapper extends BaseMapper<EventType> {
-    List<String> selectEventType();
 
     List<Integer> selectIdByEventType(@Param("eventType") String eventType);
 

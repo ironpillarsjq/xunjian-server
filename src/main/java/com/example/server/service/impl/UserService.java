@@ -168,8 +168,8 @@ public class UserService {
     }
 
 
-    public List<String> getIncidentsTypeList() {
-        return eventTypeMapper.selectEventType();
+    public List<EventType> getIncidentsTypeList() {
+        return eventTypeMapper.selectList(null);
     }
 
     public List<String> getIncidentsStates() {

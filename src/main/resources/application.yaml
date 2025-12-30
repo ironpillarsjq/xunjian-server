@@ -45,7 +45,7 @@ app:
   jwt:
     key: KKCMyBerAAjBbbtHj4KG # jwt加密密钥
   user:
-    isp-pos-valid-time: 100000000 # 巡检人员位置信息的有效时间（单位：分钟）
+    isp-pos-valid-time: 120 # 巡检人员位置信息的有效时间（单位：分钟）
     system-user-default-password: 123456 # 系统用户默认密码
   xunjian-point:
     time-limit: 1200000 # 巡检点最大间隔时间（分钟）

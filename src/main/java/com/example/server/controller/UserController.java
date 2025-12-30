@@ -99,7 +99,7 @@ public class UserController {
 
     @Operation(summary = "获取突发事件类型")
     @GetMapping("/get-incidents-type-list")
-    public ResponseResult<List<String>> getIncidentsTypeList() {
+    public ResponseResult<List<EventType>> getIncidentsTypeList() {
         return ResponseResult.success(userService.getIncidentsTypeList());
     }
 
